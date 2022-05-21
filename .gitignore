@@ -1,3 +1,4 @@
 *.pyc
 djenconfig/settings.py
+config_creator/settings.py
 db.sqlite3

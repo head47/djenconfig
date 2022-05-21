@@ -9,7 +9,9 @@
     <p>Available device targets:</p>
     <ul>
       {% for target in templates %}
-      <li>{{ target }}</li>
+      <li>
+        <a href="{% url 'genform' target %}">{{ target }}</a>
+      </li>
       {% endfor %}
     </ul>
   </body>

@@ -17,6 +17,12 @@ def index(request):
     response = HttpResponse(htmlTemplate.render(context, request))
     return response
 
+def genform(request, template):
+    htmlTemplate = loader.get_template('config_creator/genform.html')
+    context = {'template': template}
+    response = HttpResponse(htmlTemplate.render(context, request))
+    return response
+
 def generate(request, template):
     username = 'admin'
     password = 'admin'

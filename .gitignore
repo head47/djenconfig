@@ -1,0 +1,3 @@
+*.pyc
+djenconfig/settings.py
+db.sqlite3

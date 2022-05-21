@@ -6,9 +6,15 @@ from .settings import *
 import os, tempfile
 
 def index(request):
-    template = loader.get_template('config_creator/index.html')
-    context = {}
-    response = HttpResponse(template.render(context, request))
+    htmlTemplate = loader.get_template('config_creator/index.html')
+    templateDir = os.path.join(GENCONFIG_DIR,'templates')
+    templates = []
+    for t in os.listdir(templateDir):
+        if t.endswith(".rsc.template"):
+            templates.append(t[:-13])
+    templates.sort()
+    context = {'templates': templates}
+    response = HttpResponse(htmlTemplate.render(context, request))
     return response
 
 def generate(request, template):

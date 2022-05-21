@@ -6,5 +6,11 @@
   </head>
   <body>
     <h1>djenconfig v0.01</h1>
+    <p>Available device targets:</p>
+    <ul>
+      {% for target in templates %}
+      <li>{{ target }}</li>
+      {% endfor %}
+    </ul>
   </body>
 </html>

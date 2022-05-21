@@ -24,8 +24,8 @@ def genform(request, template):
     return response
 
 def generate(request, template):
-    username = 'admin'
-    password = 'admin'
+    username = request.GET['username']
+    password = request.GET['password']
     identity = 'Switch0'
     fd, outfile = tempfile.mkstemp(suffix='.rsc')
     os.close(fd)

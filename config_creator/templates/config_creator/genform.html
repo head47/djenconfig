@@ -3,6 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title>{{ template }} - djenconfig</title>
+    <style type="text/css">
+      .fieldset-auto-width {
+        display: inline-block;
+        width: 22vw;
+      }
+    </style>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous">
+    </script>
   </head>
   <body>
     <h1><a href="{% url 'index' %}">djenconfig v{{ version }}</a></h1>
@@ -22,9 +33,9 @@
         <select name="uplink" id="uplink">
           <option value="">none</option>
           {% comment "Emulating numeric for loop" %}{% endcomment %}
-          {% with range=''|center:interfaces.ether %}{% for _ in range %}
+          {% with ethcount=interfaces.ether|add:-1 %}{% with range=''|center:ethcount %}{% for _ in range %}
             <option>ether{{ forloop.counter }}</option>
-          {% endfor %}{% endwith %}
+          {% endfor %}{% endwith %}{% endwith %}
           {% with range=''|center:interfaces.sfpp %}{% for _ in range %}
             <option>sfpp{{ forloop.counter }}</option>
           {% endfor %}{% endwith %}
@@ -37,7 +48,105 @@
           {% endif %}
         </select>
       </p>
+      <h3>Interface roles</h3>
+      <div>
+        {% with range=''|center:interfaces.ether %}{% for _ in range %}
+          <fieldset class="fieldset-auto-width">
+            <legend>ether{{ forloop.counter }}</legend>
+            {% if forloop.counter == interfaces.ether %}
+              reserved port
+            {% else %}
+              <input type="radio" id="ether{{ forloop.counter }}-role-none" name="ether{{ forloop.counter }}-role" value="none" checked>
+              <label for="ether{{ forloop.counter }}-role-none">none</label>
+              <input type="radio" id="ether{{ forloop.counter }}-role-uplink" name="ether{{ forloop.counter }}-role" value="uplink" disabled>
+              <label for="ether{{ forloop.counter }}-role-uplink">uplink</label>
+              <input type="radio" id="ether{{ forloop.counter }}-role-vlan" name="ether{{ forloop.counter }}-role" value="vlan">
+              <label for="ether{{ forloop.counter }}-role-vlan">vlan: </label>
+              <input type="number" name="ether{{ forloop.counter }}-vlanid" placeholder="1" required disabled>
+            {% endif %}
+          </fieldset>
+        {% endfor %}{% endwith %}
+        {% with range=''|center:interfaces.sfpp %}{% for _ in range %}
+          <fieldset class="fieldset-auto-width">
+            <legend>sfpp{{ forloop.counter }}</legend>
+            <input type="radio" id="sfpp{{ forloop.counter }}-role-none" name="sfpp{{ forloop.counter }}-role" value="none" disabled>
+            <label for="sfpp{{ forloop.counter }}-role-none">none</label>
+            <input type="radio" id="sfpp{{ forloop.counter }}-role-uplink" name="sfpp{{ forloop.counter }}-role" value="uplink" checked>
+            <label for="sfpp{{ forloop.counter }}-role-uplink">uplink</label>
+            <input type="radio" id="sfpp{{ forloop.counter }}-role-vlan" name="sfpp{{ forloop.counter }}-role" value="vlan">
+            <label for="sfpp{{ forloop.counter }}-role-vlan">vlan: </label>
+            <input type="number" name="sfpp{{ forloop.counter }}-vlanid" placeholder="1" required disabled>
+          </fieldset>
+        {% endfor %}{% endwith %}
+        {% if interfaces.qsfp %}
+          {% with range=''|center:interfaces.qsfp.0 %}{% for _ in range %}
+            {% with outer_counter=forloop.counter range=''|center:interfaces.qsfp.1 %}{% for _ in range %}
+              <fieldset class="fieldset-auto-width">
+                <legend>qsfp{{ outer_counter }}-{{ forloop.counter }}</legend>
+                <input type="radio" id="qsfp{{ outer_counter }}-{{ forloop.counter }}-role-none" name="qsfp{{ outer_counter }}-{{ forloop.counter }}-role" value="none" disabled>
+                <label for="qsfp{{ outer_counter }}-{{ forloop.counter }}-role-none">none</label>
+                <input type="radio" id="qsfp{{ outer_counter }}-{{ forloop.counter }}-role-uplink" name="qsfp{{ outer_counter }}-{{ forloop.counter }}-role" value="uplink" checked disabled>
+                <label for="qsfp{{ outer_counter }}-{{ forloop.counter }}-role-uplink">uplink</label>
+                <input type="radio" id="qsfp{{ outer_counter }}-{{ forloop.counter }}-role-vlan" name="qsfp{{ outer_counter }}-{{ forloop.counter }}-role" value="vlan" disabled>
+                <label for="qsfp{{ outer_counter }}-{{ forloop.counter }}-role-vlan">vlan: </label>
+                <input type="number" name="qsfp{{ outer_counter }}-{{ forloop.counter }}-vlanid" placeholder="1" required disabled>
+              </fieldset>
+            {% endfor %}{% endwith %}
+          {% endfor %}{% endwith %}
+        {% endif %}
+      </div>
       <p><input type="submit" value="Generate"></p>
     </form>
+    <script type="text/javascript">
+      $(function(){
+        var uplink = $("#uplink");
+        uplink.data("prev",uplink.val());
+
+        uplink.change(function(){
+           var jqThis = $(this);
+           var prevVal = jqThis.data("prev");
+           var newVal = jqThis.val();
+           if (newVal.startsWith("ether")) {
+             $("#"+newVal+"-role-uplink").prop('checked',true);
+             $("#"+newVal+"-role-none").prop('disabled',true);
+             $("#"+newVal+"-role-vlan").prop('disabled',true);
+             $("input[name="+newVal+"-vlanid]").prop('disabled',true);
+           }
+           else if (newVal.startsWith("sfpp")) {
+             $("#"+newVal+"-role-uplink").prop('checked',true);
+             $("#"+newVal+"-role-uplink").prop('disabled',true);
+             $("#"+newVal+"-role-vlan").prop('disabled',true);
+             $("input[name="+newVal+"-vlanid]").prop('disabled',true);
+           }
+           else if (newVal.startsWith("qsfp")) {
+
+           }
+           if (prevVal.startsWith("ether")) {
+             $("#"+prevVal+"-role-none").prop('checked',true);
+             $("#"+prevVal+"-role-none").prop('disabled',false);
+             $("#"+prevVal+"-role-vlan").prop('disabled',false);
+           }
+           else if (prevVal.startsWith("sfpp")) {
+             $("#"+prevVal+"-role-uplink").prop('disabled',false);
+             $("#"+prevVal+"-role-vlan").prop('disabled',false);
+           }
+           else if (newVal.startsWith("qsfp")) {
+
+           }
+           jqThis.data("prev",newVal);
+        });
+
+        $(":radio[name$=role]").change(function(){
+          var jqThis = $(this);
+          var pname = jqThis.attr("name").slice(0,-5);
+          if (this.value == 'vlan') {
+            $("input[name="+pname+"-vlanid]").prop('disabled',false);
+          }
+          else {
+            $("input[name="+pname+"-vlanid]").prop('disabled',true);
+          }
+        });
+      });
+    </script>
   </body>
 </html>

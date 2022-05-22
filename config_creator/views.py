@@ -42,9 +42,24 @@ def generate(request, template):
     fd, outfile = tempfile.mkstemp(suffix='.rsc')
     os.close(fd)
     uplink = request.GET['uplink'].replace('\n',' ')
-    vlans = {
-        1034: [('ether','2'),('ether','3')]
-    }
+    vlans = {}
+    for entry in request.GET:
+        print(entry,':',request.GET[entry])
+        if entry.endswith('-role') and request.GET[entry] == 'vlan':
+            pname = entry[:-5]
+            if pname.startswith('ether'):
+                ptype = 'ether'
+                pnum = pname[5:]
+            elif pname.startswith('sfpp'):
+                ptype = 'sfpp'
+                pnum = pname[4:]
+            else:
+                continue
+            vid = int(request.GET[f'{pname}-vlanid'])
+            if vid not in vlans:
+                vlans[vid] = [(ptype,pnum)]
+            else:
+                vlans[vid].append((ptype,pnum))
 
     runner = Runner(['python3', os.path.join(GENCONFIG_DIR,'genconfig.py')])
     runner.start()

@@ -4,6 +4,7 @@ from django.template import loader
 from .modules.runner import Runner
 from .settings import *
 import os, tempfile
+import json
 
 VERSION = '0.01'
 TEMPLATE_DIR = os.path.join(GENCONFIG_DIR,'templates')
@@ -24,9 +25,12 @@ def index(request):
 
 def genform(request, template):
     htmlTemplate = loader.get_template('config_creator/genform.html')
+    with open(os.path.join(TEMPLATE_DIR,template+'.json')) as tjson:
+        device = json.loads(tjson.read())
     context = {
         'template': template,
         'version': VERSION,
+        'interfaces': device["interfaces"],
     }
     response = HttpResponse(htmlTemplate.render(context, request))
     return response
@@ -37,7 +41,7 @@ def generate(request, template):
     identity = request.GET['identity'].replace('\n',' ')
     fd, outfile = tempfile.mkstemp(suffix='.rsc')
     os.close(fd)
-    uplink = 'ether1'
+    uplink = request.GET['uplink'].replace('\n',' ')
     vlans = {
         1034: [('ether','2'),('ether','3')]
     }

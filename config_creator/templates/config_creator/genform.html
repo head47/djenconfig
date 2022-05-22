@@ -17,6 +17,26 @@
         <label for="identity">Identity:</label>
         <input type="text" name="identity" id="identity" placeholder="MikroTik">
       </p>
+      <p>
+        <label for="uplink">Uplink:</label>
+        <select name="uplink" id="uplink">
+          <option value="">none</option>
+          {% comment "Emulating numeric for loop" %}{% endcomment %}
+          {% with range=''|center:interfaces.ether %}{% for _ in range %}
+            <option>ether{{ forloop.counter }}</option>
+          {% endfor %}{% endwith %}
+          {% with range=''|center:interfaces.sfpp %}{% for _ in range %}
+            <option>sfpp{{ forloop.counter }}</option>
+          {% endfor %}{% endwith %}
+          {% if interfaces.qsfp %}
+            {% with range=''|center:interfaces.qsfp.0 %}{% for _ in range %}
+              {% with outer_counter=forloop.counter range=''|center:interfaces.qsfp.1 %}{% for _ in range %}
+                <option>qsfp{{ outer_counter }}-{{ forloop.counter }}</option>
+              {% endfor %}{% endwith %}
+            {% endfor %}{% endwith %}
+          {% endif %}
+        </select>
+      </p>
       <p><input type="submit" value="Generate"></p>
     </form>
   </body>

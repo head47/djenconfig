@@ -18,36 +18,40 @@
   <body>
     <h1><a href="{% url 'index' %}">djenconfig v{{ version }}</a></h1>
     <form class="" action="{% url 'generate' template %}" method="get">
-      <p>
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" placeholder="admin"><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password">
-      </p>
-      <p>
-        <label for="identity">Identity:</label>
-        <input type="text" name="identity" id="identity" placeholder="MikroTik">
-      </p>
-      <p>
-        <label for="uplink">Uplink:</label>
-        <select name="uplink" id="uplink">
-          <option value="">none</option>
-          {% comment "Emulating numeric for loop" %}{% endcomment %}
-          {% with ethcount=interfaces.ether|add:-1 %}{% with range=''|center:ethcount %}{% for _ in range %}
-            <option>ether{{ forloop.counter }}</option>
-          {% endfor %}{% endwith %}{% endwith %}
-          {% with range=''|center:interfaces.sfpp %}{% for _ in range %}
-            <option>sfpp{{ forloop.counter }}</option>
-          {% endfor %}{% endwith %}
-          {% if interfaces.qsfp %}
-            {% with range=''|center:interfaces.qsfp.0 %}{% for _ in range %}
-              {% with outer_counter=forloop.counter range=''|center:interfaces.qsfp.1 %}{% for _ in range %}
-                <option>qsfp{{ outer_counter }}-{{ forloop.counter }}</option>
-              {% endfor %}{% endwith %}
+      <table>
+        <tr>
+          <td><label for="username">Username:</label></td>
+          <td><input type="text" name="username" id="username" placeholder="admin"></td>
+        </tr>
+        <tr>
+          <td><label for="password">Password:</label></td>
+          <td><input type="password" name="password" id="password"></td>
+        </tr>
+        <tr>
+          <td><label for="identity">Identity:</label></td>
+          <td><input type="text" name="identity" id="identity" placeholder="MikroTik"></td>
+        </tr>
+        <tr>
+          <td><label for="uplink">Uplink:</label></td>
+          <td><select name="uplink" id="uplink">
+            <option value="">none</option>
+            {% comment "Emulating numeric for loop" %}{% endcomment %}
+            {% with ethcount=interfaces.ether|add:-1 %}{% with range=''|center:ethcount %}{% for _ in range %}
+              <option>ether{{ forloop.counter }}</option>
+            {% endfor %}{% endwith %}{% endwith %}
+            {% with range=''|center:interfaces.sfpp %}{% for _ in range %}
+              <option>sfpp{{ forloop.counter }}</option>
             {% endfor %}{% endwith %}
-          {% endif %}
-        </select>
-      </p>
+            {% if interfaces.qsfp %}
+              {% with range=''|center:interfaces.qsfp.0 %}{% for _ in range %}
+                {% with outer_counter=forloop.counter range=''|center:interfaces.qsfp.1 %}{% for _ in range %}
+                  <option>qsfp{{ outer_counter }}-{{ forloop.counter }}</option>
+                {% endfor %}{% endwith %}
+              {% endfor %}{% endwith %}
+            {% endif %}
+          </select></td>
+        </tr>
+      </table>
       <h3>Interface roles</h3>
       <div>
         {% with range=''|center:interfaces.ether %}{% for _ in range %}

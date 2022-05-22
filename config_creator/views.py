@@ -6,12 +6,12 @@ from .settings import *
 import os, tempfile
 
 VERSION = '0.01'
+TEMPLATE_DIR = os.path.join(GENCONFIG_DIR,'templates')
 
 def index(request):
     htmlTemplate = loader.get_template('config_creator/index.html')
-    templateDir = os.path.join(GENCONFIG_DIR,'templates')
     templates = []
-    for t in os.listdir(templateDir):
+    for t in os.listdir(TEMPLATE_DIR):
         if t.endswith(".rsc.template"):
             templates.append(t[:-13])
     templates.sort()

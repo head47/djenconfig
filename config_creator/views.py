@@ -5,6 +5,8 @@ from .modules.runner import Runner
 from .settings import *
 import os, tempfile
 
+VERSION = '0.01'
+
 def index(request):
     htmlTemplate = loader.get_template('config_creator/index.html')
     templateDir = os.path.join(GENCONFIG_DIR,'templates')
@@ -13,13 +15,19 @@ def index(request):
         if t.endswith(".rsc.template"):
             templates.append(t[:-13])
     templates.sort()
-    context = {'templates': templates}
+    context = {
+        'templates': templates,
+        'version': VERSION,
+    }
     response = HttpResponse(htmlTemplate.render(context, request))
     return response
 
 def genform(request, template):
     htmlTemplate = loader.get_template('config_creator/genform.html')
-    context = {'template': template}
+    context = {
+        'template': template,
+        'version': VERSION,
+    }
     response = HttpResponse(htmlTemplate.render(context, request))
     return response
 

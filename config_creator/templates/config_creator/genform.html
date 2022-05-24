@@ -8,6 +8,10 @@
         display: inline-block;
         width: 22vw;
       }
+      .div-reserved-port {
+        text-align: center;
+        background-color: #D3D3D3;
+      }
     </style>
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -58,7 +62,7 @@
           <fieldset class="fieldset-auto-width">
             <legend>ether{{ forloop.counter }}</legend>
             {% if forloop.counter == interfaces.ether %}
-              reserved port
+              <div class="div-reserved-port">reserved port</div>
             {% else %}
               <input type="radio" id="ether{{ forloop.counter }}-role-none" name="ether{{ forloop.counter }}-role" value="none" checked>
               <label for="ether{{ forloop.counter }}-role-none">none</label>

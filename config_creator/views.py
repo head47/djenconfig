@@ -6,7 +6,7 @@ from .settings import *
 import os, tempfile
 import json
 
-VERSION = '1.00' # compatible with genconfig v1.03
+VERSION = '1.01' # compatible with genconfig v1.03
 TEMPLATE_DIR = os.path.join(GENCONFIG_DIR,'templates')
 
 def index(request):
